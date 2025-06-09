@@ -6,20 +6,14 @@
     <ul v-else class="results-list">
       <li v-for="item in results" :key="item.url" class="result-item">
         <h3 class="result-title">
-          <a
-            :href="item.url"
-            target="_blank"
-            rel="noopener noreferrer"
-          >{{ item.title || '无标题' }}</a>
+          <a :href="item.url" target="_blank" rel="noopener noreferrer">
+            {{ item.title || '无标题' }}
+          </a>
         </h3>
         <p class="result-content">{{ truncateText(item.content) }}</p>
-        <a
-          :href="item.url"
-          target="_blank"
-          class="result-link"
-          rel="noopener noreferrer"
-        >{{ item.url }}</a>
-        <!-- 网页快照按钮 -->
+        <a :href="item.url" target="_blank" class="result-link" rel="noopener noreferrer">
+          {{ item.url }}
+        </a>
         <button
           v-if="item.snapshot_filename"
           class="snapshot-button"
@@ -43,7 +37,8 @@ const results = ref([])
 const loading = ref(true)
 
 const query = route.query.q || ''
-const searchType = route.query.type || 'normal' // 支持通配 wildcard、默认 normal
+const searchType = route.query.type || 'normal'
+const prefs = route.query.prefs || ''
 
 function truncateText(text = '', maxLength = 150) {
   if (text.length <= maxLength) return text
@@ -51,8 +46,7 @@ function truncateText(text = '', maxLength = 150) {
 }
 
 function openSnapshot(item) {
-  const filename = `${item.snapshot_filename}`
-  const path = `http://localhost:5000/snapshots/${filename}`
+  const path = `http://localhost:5000/snapshots/${item.snapshot_filename}`
   window.open(path, '_blank')
 }
 
@@ -60,7 +54,8 @@ onMounted(async () => {
   try {
     const res = await axios.post('http://127.0.0.1:5000/search', {
       keyword: query,
-      type: searchType
+      type: searchType,
+      prefs: prefs
     })
     results.value = res.data || []
   } catch (err) {
@@ -133,7 +128,6 @@ onMounted(async () => {
   cursor: pointer;
 }
 
-/* 新增快照按钮样式 */
 .snapshot-button {
   margin-top: 8px;
   padding: 6px 12px;
