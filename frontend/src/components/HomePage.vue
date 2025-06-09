@@ -39,6 +39,21 @@
         </div>
       </div>
     </div>
+
+    <div class="guess-you-like" style="margin-top: 30px;">
+      <h4>猜你喜欢喵</h4>
+      <ul v-if="guessKeywords.length">
+        <li
+          v-for="(kw, index) in guessKeywords"
+          :key="index"
+          @click="goToGuessSearch(kw)"
+          class="guess-item"
+        >
+          {{ kw }}
+        </li>
+      </ul>
+      <div v-else>没有喵~</div>
+    </div>
   </div>
 </template>
 
@@ -50,6 +65,8 @@ const query = ref('')
 const searchType = ref('normal')
 const router = useRouter()
 const searchLogs = ref([])
+const guessKeywords = ref([])
+const selectedSourceTypes = ref([])
 
 const STORAGE_KEY = 'search_logs'
 
@@ -89,12 +106,11 @@ const sourceTypes = [
   { value: 'zfxy', label: '周政' }
 ]
 
-const selectedSourceTypes = ref([])
-
 onMounted(() => {
   const logs = localStorage.getItem(STORAGE_KEY)
   if (logs) {
     searchLogs.value = JSON.parse(logs)
+    generateGuessKeywords()
   }
 })
 
@@ -114,11 +130,13 @@ function saveLog(keyword, type) {
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(searchLogs.value))
+  generateGuessKeywords()
 }
 
 function clearLogs() {
   searchLogs.value = []
   localStorage.removeItem(STORAGE_KEY)
+  guessKeywords.value = []
 }
 
 function onSearch() {
@@ -134,6 +152,57 @@ function onSearch() {
     })
   }
 }
+
+function goToGuessSearch(keyword) {
+  router.push({
+    name: 'Search',
+    query: {
+      q: keyword,
+      type: 'normal',
+      prefs: selectedSourceTypes.value.join(',')
+    }
+  })
+}
+
+function generateGuessKeywords() {
+  const hotBackup = ['校园通知', '奖学金申请', '课程安排', '考试时间', '研究生推免', '四六级报名']
+  const suffixes = ['通知', '讲座', '安排', '官网', '报名', '政策', '指南']
+  const typeMap = {
+    cs: ['软院通知', '程序设计', 'C++课设'],
+    law: ['法考报名', '案例分析'],
+    history: ['中国近代史', '史学讲座'],
+    math: ['高数期末', '数学建模'],
+    finance: ['金融实习', '经济形势'],
+    medical: ['临床课程', '医学讲座']
+  }
+
+  if (!searchLogs.value.length && selectedSourceTypes.value.length === 0) {
+    guessKeywords.value = hotBackup.slice(0, 6)
+    return
+  }
+
+  const keywordParts = searchLogs.value
+    .slice(0, 3)
+    .flatMap(log => log.keyword.split(/[\s，。、“”·《》]/).filter(w => w.length >= 2))
+
+  const combined = []
+
+  keywordParts.forEach(part => {
+    const shuffled = [...suffixes].sort(() => Math.random() - 0.5)
+    shuffled.slice(0, 2).forEach(suf => {
+      combined.push(part + suf)
+    })
+  })
+
+  selectedSourceTypes.value.forEach(type => {
+    if (typeMap[type]) {
+      combined.push(...typeMap[type].slice(0, 2))
+    }
+  })
+
+  guessKeywords.value = [...new Set(combined)].slice(0, 6)
+}
+
 </script>
 
 <style scoped>
@@ -198,5 +267,27 @@ function onSearch() {
   align-items: center;
   gap: 4px;
   user-select: none;
+}
+
+.guess-you-like {
+  max-width: 400px;
+  font-size: 14px;
+  color: #444;
+}
+
+.guess-you-like ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.guess-item {
+  padding: 4px 6px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.guess-item:hover {
+  background-color: #f5f5f5;
 }
 </style>

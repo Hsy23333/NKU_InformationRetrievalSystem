@@ -7,7 +7,7 @@ import scrapy
 import os
 import tempfile  # 新增
 
-# Selenium 设置
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -30,7 +30,7 @@ class nkuczSpider(CrawlSpider):
         super(nkuczSpider, self).__init__(*args, **kwargs)
         self.client = MongoClient('localhost', 27017)
         self.db = self.client['NKU']
-        self.collection = self.db['nku']   # 可根据需要改为 'nku_news'
+        self.collection = self.db['nku']  
         self.page_id = 1
 
         chrome_options = Options()

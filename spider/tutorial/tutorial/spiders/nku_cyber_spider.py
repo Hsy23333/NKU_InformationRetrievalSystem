@@ -39,7 +39,7 @@ class nkucyberSpider(CrawlSpider):
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
 
-        # 新增：为每次运行创建唯一用户数据目录，避免冲突
+
         user_data_dir = tempfile.mkdtemp(prefix="chrome_user_data_")
         chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
 

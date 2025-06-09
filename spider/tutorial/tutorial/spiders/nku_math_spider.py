@@ -5,9 +5,7 @@ from datetime import datetime
 from pymongo import MongoClient
 import scrapy
 import os
-import tempfile  # 新增
-
-# Selenium 设置
+import tempfile 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -30,7 +28,7 @@ class nkumathSpider(CrawlSpider):
         super(nkumathSpider, self).__init__(*args, **kwargs)
         self.client = MongoClient('localhost', 27017)
         self.db = self.client['NKU']
-        self.collection = self.db['nku']   # 可根据需要改为 'nku_news'
+        self.collection = self.db['nku'] 
         self.page_id = 1
 
         chrome_options = Options()

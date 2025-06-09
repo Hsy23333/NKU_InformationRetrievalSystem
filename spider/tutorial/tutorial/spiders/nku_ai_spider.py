@@ -29,7 +29,7 @@ class nkuaiSpider(CrawlSpider):
         super(nkuaiSpider, self).__init__(*args, **kwargs)
         self.client = MongoClient('localhost', 27017)
         self.db = self.client['NKU']
-        self.collection = self.db['nku']   # 统一存入 nku 集合
+        self.collection = self.db['nku']   
         self.page_id = 1
 
         chrome_options = Options()
@@ -62,7 +62,7 @@ class nkuaiSpider(CrawlSpider):
         item['source_type'] = 'ai'
         item['page_links'] = list(set(response.css("a::attr(href)").getall()))
 
-        # 生成快照文件名并保存
+      
         snapshot_name = f"ai_{self.page_id}.png"
         item['snapshot_filename'] = snapshot_name
         self.save_snapshot(url, snapshot_name)

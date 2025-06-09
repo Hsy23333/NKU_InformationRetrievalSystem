@@ -6,7 +6,7 @@ from pymongo import MongoClient
 import scrapy
 import os
 
-# Selenium 设置
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -62,7 +62,6 @@ class nkuccSpider(CrawlSpider):
         item['source_type'] = 'cc'
         item['page_links'] = list(set(response.css("a::attr(href)").getall()))
 
-        # 生成快照文件名并保存
         snapshot_name = f"cc_{self.page_id}.png"
         item['snapshot_filename'] = snapshot_name
         self.save_snapshot(url, snapshot_name)

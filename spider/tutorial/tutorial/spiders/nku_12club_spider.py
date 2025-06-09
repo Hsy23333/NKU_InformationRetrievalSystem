@@ -5,7 +5,6 @@ from pymongo import MongoClient
 import scrapy
 import os
 
-# 导入 Selenium
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -21,7 +20,7 @@ class nku12clubspider(scrapy.Spider):
         self.collection = self.db['nku']
         self.jump_num = 0
 
-        # 设置 Selenium 无头浏览器
+#设置Selenium无头浏览器
         CHROME_PATH = "C:/Program Files/Google/Chrome/Application/chrome.exe"
 
         chrome_options = Options()
@@ -31,19 +30,19 @@ class nku12clubspider(scrapy.Spider):
         chrome_options.add_argument("--no-sandbox")
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-        # 快照保存路径
+#快照保存路径
         self.snapshot_dir = "./snapshots"
         os.makedirs(self.snapshot_dir, exist_ok=True)
 
     def start_requests(self):
         base_url = "http://12club.nankai.edu.cn/programs/{}"
-        for idx in range(1, 2710):  # 根据需要设置遍历编号范围
+        for idx in range(1, 2710): 
             url = base_url.format(idx)
             yield Request(url=url, callback=self.parse, meta={'page_id': idx})
 
     def parse(self, response):
         if response.status != 200 or "Not Found" in response.text:
-            return  # 无效页面直接跳过
+            return  
 
         page_id = response.meta['page_id']
         item = NkuspiderItem()
@@ -66,7 +65,7 @@ class nku12clubspider(scrapy.Spider):
         item['snapshot_filename'] = f"12club_{page_id}.png"
         item['source_type'] = "12club"
 
-        # 保存网页快照
+#保存快照
         self.save_snapshot(response.url, page_id)
 
         yield item

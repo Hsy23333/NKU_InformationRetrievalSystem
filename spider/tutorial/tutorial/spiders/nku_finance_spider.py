@@ -7,7 +7,7 @@ import scrapy
 import os
 import tempfile  # 新增
 
-# Selenium 设置
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
